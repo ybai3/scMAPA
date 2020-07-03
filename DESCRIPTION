@@ -1,0 +1,21 @@
+Package: scMAPA
+Type: Package
+Title: Identifying genes and cell typeswith dynamic alternative polyadenylation in multi-cluster single-cell transcriptomicsdata
+Version: 0.1.0
+Authors@R: person("Yulong", "Bai", email = "yub20@pitt.edu",
+  role = c("aut", "cre"))
+BugReports: https://github.com/ybai3/scMAPA
+Description: Identifying genes and cell typeswith dynamic alternative polyadenylation in multi-cluster single-cell transcriptomicsdata.
+License: BSD 3 License
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    multcomp,
+    lmtest,
+    wec,
+    Matrix.utils,
+    nnet,
+    stringr,
+    gplots,
+    ggplot2
+RoxygenNote: 7.1.1
