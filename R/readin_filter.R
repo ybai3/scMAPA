@@ -1,4 +1,4 @@
-#' Read in DaPars outputs and filter out low expressed genes.
+#' Read in DaPars outputs and filter out low expressed genes
 #'
 #' \code{readin} returns filtered isoform count matrix for APA identification.
 #'

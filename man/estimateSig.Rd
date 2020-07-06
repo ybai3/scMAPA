@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimateSig.R
 \name{estimateSig}
 \alias{estimateSig}
-\title{Estimate significance of APA event at gene level.}
+\title{Estimate significance of APA event at gene level}
 \usage{
 estimateSig(ISOMatrix, mode = "model", FDR_P_cutoff = 0.05)
 }

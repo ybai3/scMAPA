@@ -1,4 +1,4 @@
-#' Estimate significance of APA event at gene level.
+#' Estimate significance of APA event at gene level
 #'
 #' \code{estimateSig} estimates significance of APA event at gene level using either model-based approach or test-based approach. Model-based approach will fit a logistic regression model for each gene and estimate significance using Likelihood ratio test. Test-based approach will condunct Fisher's exact test on all possible pairs of clusters (i.e. 1 vs. 2; 1 vs. 3; 2 vs. 3 if 3 clusters) for each gene and use FDR to adjust for multiple-testing issue. Test-based approach defines significant APA genes if they pass significance test in any pair of the clusters.
 #'
@@ -106,13 +106,13 @@ estimateSig <- function(ISOMatrix , mode = "model", FDR_P_cutoff=0.05){
   }
 }
 
-#' Identify gene-cluster-specific 3'UTR shortening or lengthening from gene-level significant APA events.
+#' Identify gene-cluster-specific 3'UTR shortening or lengthening
 #'
 #' \code{IdentifyClusterAPA} Identifies gene-cluster-specific 3'UTR shortening or lengthening based on ECoeffSig_Mat output from model mode \code{estimateSig}.
 #'
-#' @param ECoeffSig_Mat Estimated coefficients, unadjusted P values of Wald tests on coefficients, and SE returned by model mode \code{estimateSig}.
+#' @param ECoeffSig_Mat Matrix containing estimated coefficients, unadjusted P values of Wald tests on coefficients, and SE returned by model mode \code{estimateSig}.
 #' @param FDR_P_cutoff The cutoff for FDR-controlled P values of Wald tests. Default to 0.05. Only cluster-specific APA events with FDR-controlled P values of Wald test smaller than this number will be considered as 3'UTR lengthening or shortening.
-#' @param CoeffCutoff The cutoff for estimated coefficients of logistic regression. Only cluster-specific APA events with absoluste value of estimated coeffcients greater than this cutoff will be considered as 3'UTR lengthening or shortening.
+#' @param CoeffCutoff The cutoff for estimated coefficients of logistic regression. Default to log(2). Only cluster-specific APA events with absoluste value of estimated coeffcients greater than this cutoff will be considered as 3'UTR lengthening or shortening.
 #' @return \code{IdentifyClusterAPA} returns a list consists of a table for each cluster. Tables contain the 3'UTR shortening or lengthening passed filters and their gene IDs, APA event IDs.
 #'
 #' @examples
@@ -131,7 +131,7 @@ IdentifyClusterAPA <- function(ECoeffSig_Mat, FDR_P_cutoff=0.05, CoeffCutoff=log
   length(list_clusterAPA) <- ncol(ECoeffSig_Mat.pval)
   ECoeffSig_Mat <- ECoeffSig_Mat[,-1]
   for (j in 1:ncol(ECoeffSig_Mat.pval)){
-    list_clusterAPA[[j]] <- data.frame(GeneSymbol=c(ECoeffSig_Mat$GeneSymbol[ECoeffSig_Mat[,j]>log(2) & EP.qval[,j]<=0.05], ECoeffSig_Mat$GeneSymbol[ECoeffSig_Mat[,j]<(-log(2)) & EP.qval[,j]<=0.05]), UTR=c(rep("lengthening", length(ECoeffSig_Mat$GeneSymbol[ECoeffSig_Mat[,j]>log(2) & EP.qval[,j]<=0.05])), rep("shortening", length(ECoeffSig_Mat$GeneSymbol[ECoeffSig_Mat[,j]<(-log(2)) & EP.qval[,j]<=0.05]))), TranscriptID= c(ECoeffSig_Mat$TranscriptID[ECoeffSig_Mat[,j]>log(2) & EP.qval[,j]<=0.05], ECoeffSig_Mat$TranscriptID[ECoeffSig_Mat[,j]<(-log(2)) & EP.qval[,j]<=0.05]))
+    list_clusterAPA[[j]] <- data.frame(GeneSymbol=c(ECoeffSig_Mat$GeneSymbol[ECoeffSig_Mat[,j]>CoeffCutoff & EP.qval[,j]<=FDR_P_cutoff], ECoeffSig_Mat$GeneSymbol[ECoeffSig_Mat[,j]<(-CoeffCutoff) & EP.qval[,j]<=FDR_P_cutoff]), UTR=c(rep("lengthening", length(ECoeffSig_Mat$GeneSymbol[ECoeffSig_Mat[,j]>CoeffCutoff & EP.qval[,j]<=FDR_P_cutoff])), rep("shortening", length(ECoeffSig_Mat$GeneSymbol[ECoeffSig_Mat[,j]<(-CoeffCutoff) & EP.qval[,j]<=FDR_P_cutoff]))), TranscriptID= c(ECoeffSig_Mat$TranscriptID[ECoeffSig_Mat[,j]>CoeffCutoff & EP.qval[,j]<=FDR_P_cutoff], ECoeffSig_Mat$TranscriptID[ECoeffSig_Mat[,j]<(-CoeffCutoff) & EP.qval[,j]<=FDR_P_cutoff]))
     list_clusterAPA[[j]] <- list_clusterAPA[[j]][!is.na(list_clusterAPA[[j]]$GeneSymbol),]
   }
   names(list_clusterAPA) <- paste0(unique(do.call(rbind,str_split(colnames(ECoeffSig_Mat.pval), "\\."))[,1]))

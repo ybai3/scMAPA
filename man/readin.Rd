@@ -2,7 +2,7 @@
 % Please edit documentation in R/readin_filter.R
 \name{readin}
 \alias{readin}
-\title{Read in DaPars outputs and filter out low expressed genes.}
+\title{Read in DaPars outputs and filter out low expressed genes}
 \usage{
 readin(path, NAcutoff, CPMcutoff = 10)
 }
