@@ -113,7 +113,7 @@ estimateSig <- function(ISOMatrix , mode = "model", FDR_P_cutoff=0.05){
 #' @param ECoeffSig_Mat Matrix containing estimated coefficients, unadjusted P values of Wald tests on coefficients, and SE returned by model mode \code{estimateSig}.
 #' @param FDR_P_cutoff The cutoff for FDR-controlled P values of Wald tests. Default to 0.05. Only cluster-specific APA events with FDR-controlled P values of Wald test smaller than this number will be considered as 3'UTR lengthening or shortening.
 #' @param CoeffCutoff The cutoff for estimated coefficients of logistic regression. Default to log(2). Only cluster-specific APA events with absoluste value of estimated coeffcients greater than this cutoff will be considered as 3'UTR lengthening or shortening.
-#' @return \code{IdentifyClusterAPA} returns a list consists of a table for each cluster. Tables contain the 3'UTR shortening or lengthening passed filters and their gene IDs, APA event IDs.
+#' @return \code{IdentifyClusterAPA} returns a list consists of tables for every cluster. Tables contain the gene IDs, APA event IDs of 3'UTR shortening or lengthening that passed filters.
 #'
 #' @examples
 #' result_list  <- IdentifyClusterAPA(ECoeffSig_Mat = result_from_estimateSig$ECoeffSig_Mat, FDR_P_cutoff=0.05, CoeffCutoff=log(2))
