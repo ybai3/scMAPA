@@ -39,6 +39,8 @@ The BAM file for each cluster will be output to the working directory.
 
 The Python code used to split BAM file was kindly shared by Dr. Ming Tang at http://doi.org/10.5281/zenodo.3946832. It was originally designed for scATAC Seq and we modified it so that it can be used to split RNA Seq BAM files. 
 
+### Convert BAM files to Bedgraph format
+
 
 ## Part 2 Model fitting, APA detection, and identification of cluster-specific 3'UTR dynamics
 
