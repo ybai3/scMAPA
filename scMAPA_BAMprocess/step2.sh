@@ -3,7 +3,7 @@
 # Step2.sh is a shell script that converts splitted BAM to BEDGRAPh.
 # Zhenjiang Fan modified it to a shell script.
 # Please load samtools and bedtools first.
-# ./step2.sh path_to_bam_directory path_to_output_bedgraph_directory
+# ./step2.sh path_to_bam_directory 
 
 bam_files=$1/*.bam
 format=*.bam
