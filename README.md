@@ -1,11 +1,51 @@
 
 # scMAPA
 
-Alternative polyadenylation (APA) causes shortening or lengthening of the 3ʹ-untranslated region (3ʹ-UTR), widespread in complex tissues. To detect APA and identify cell-type-specific APA in multi-cluster setting, we developed a model-based method, scMAPA. First part of scMAPA is coded as shell scripts, which can 1) divide the aligned read data by the cell cluster; 2) convert BAM to Bedgraph file; 3) estimate the abundance of 3ʹ-UTR long and short isoform of genes in each cluster-bulk data using linear regression and quadratic programming implemented in DaPars. Second part of scMAPA is coded as a R package, which can 4) fit a logistic regression model for each gene and estimate the significance of APA; 5) Identify cluster-specific 3'UTR shortening and lengthening; 6) Do visualization to show the APA dynamics. This vignette introduces the usage of R package part of scMAPA. 
+Alternative polyadenylation (APA) causes shortening or lengthening of the 3ʹ-untranslated region (3ʹ-UTR), widespread in complex tissues. To detect APA and identify cell-type-specific APA in multi-cluster setting, we developed a model-based method, scMAPA. First part of scMAPA is coded as shell scripts, which can 1) divide the aligned read data by the cell cluster; 2) convert BAM to Bedgraph file; 3) estimate the abundance of 3ʹ-UTR long and short isoform of genes in each cluster-bulk data using linear regression and quadratic programming implemented in DaPars. Second part of scMAPA is coded as a R package, which can 4) fit a logistic regression model for each gene and estimate the significance of APA; 5) Identify cluster-specific 3'UTR shortening and lengthening; 6) Do visualization to show the APA dynamics. 
+
+
+
+## Part 1 BAM file processing and estimation of long/short isoforms
+
+### Download BAM processing shell scripts
+<!-- -->
+
+    git clone https://github.com/ybai3/scMAPA.git
+   
+There are 3 shell scripts named step1.sh, step2.sh, step3.sh, corresponding to step 1), 2), and 3), respectively.
+
+### Split BAM files
+
+In this step, we use step1.sh to split BAM files by cell cluster information provided by user. To run step1.sh, please first load Python 3.7 with dependent modules. Step1.sh takes two positional arguments. The first argument indicates the directory to the file storing cluster information and the second argument indicates the directory to the BAM file.
+
+Cluster information should be stored in a csv file with two columns. First column contains the cell barcodes that match the barcodes in the BAM file. Second columns contains the cluster ID. For example, the first several lines of a cluster csv file should look like: 
+```
+  Barcode,Cluster
+  ACGTGATGAGCGTT-1,Oligos
+  ACGACCCTAGACTC-1,Oligos
+  ATATAGTGTCACCC-1,Oligos
+  AGTCAGACGAGAGC-1,Oligos
+  GATCTTTGGTCATG-1,Oligos
+  AATCCTACGCATAC-1,Oligos
+```
+Here is an exmaple to run step1.sh:
+```
+module load gcc/8.2.0
+module load python/bioconda-3.7-2019.03
+chmod +x step1.sh
+./step1.sh /Path/to/cluster.csv /Path/to/merged.bam
+```
+The BAM file for each cluster will be output to the working directory. 
+
+The Python code used to split BAM file was kindly shared by Dr. Ming Tang at http://doi.org/10.5281/zenodo.3946832. It was originally designed for scATAC Seq and we modified it so that it can be used to split RNA Seq BAM files. 
+
+
+## Part 2 Model fitting, APA detection, and identification of cluster-specific 3'UTR dynamics
 
 The data used in this example is an intermediate analysis result on a subset of mouse cortex and midbrain dorsal data. The source of the data could be found here: [Zeisel et al. DOI:https://doi.org/10.1016/j.cell.2018.06.021]
 
-## Load dependencies
+### Load dependencies
+
 Please install the following R packages before using scMAPA: multcomp, lmtest, wec, Matrix.utils, nnet, stringr, gplots, ggplot2, grDevices. 
 ```{r, echo=TRUE, message=FALSE}
 if(!require(devtools)) install.packages("devtools")
@@ -23,7 +63,7 @@ library(ggplot2)
 library(scMAPA)
 ```
 
-## Read in PDUI matrices output from shell scripts
+### Read in PDUI matrices output from shell scripts
 
 First, we use readin() function to input the PDUI matrices from shell scripts. Path= should be set to the folder containing (only) outputs from DaPars for all samples. NAcutoff refers to the number of NAs among clusters should be tolerated for each gene. For example, if we have 6 clusters, genes with more than NAcutoff=3 of NAs among clusters should be filtered out. Genes with number of NAs <= NAcutoff will remain. 
 ```{r Load object, echo=TRUE, message=FALSE}
@@ -42,7 +82,7 @@ a[1:5,]
 
 As shown above, readin() returns filtered isoform specific count matrix. Each cluster has two columns, corresponding to long/short isoforms. All further statistical analysis would be conducted on this matrix.
 
-## Fit model for each gene and estimate gene-level significance of APA
+### Fit model for each gene and estimate gene-level significance of APA
 
 In this example, to save time, we first randomly select 100 genes from 2222 genes. 
 ```{r}
@@ -82,7 +122,7 @@ b$ECoeffSig_Mat[1:3,]
     ENSMUST00000000769.13|Serpinf1|chr11|- ENSMUST00000000769.13|Serpinf1|chr11|-   -3.091410     2.155614     0.650714     4.905856e-26  4.394695e-18  0.23257649   0.2929338  0.24868416   0.5451016
     ENSMUST00000000925.9|Smarcb1|chr10|-     ENSMUST00000000925.9|Smarcb1|chr10|-  -12.564490     5.622854    -14.585091    9.866261e-01  9.851048e-01  0.98447556 749.5591201  301.17936633 749.5589398
 
-## Identify cluster-specific 3' UTR shortening and lengthening
+### Identify cluster-specific 3' UTR shortening and lengthening
 
 After identifying genes with significant APA dynamics among all clusters, we would like to go one step further to identify the clusters with significantly more or less long isoforms than the across-cluster average for the gene. We call this step as gene-cluster-level identification, it identifies clusters whose estimated regression model coefficient is significantly (FDR < 0.05 using Wald test) and strongly (absolute value of coefficient > log(2), corresponds to 2 fold change in odds ratio) deviated from 0. Both these two parameters could be changed by users.
 ```{r}
@@ -105,7 +145,7 @@ c$Immune[1:5,]
     4      Uchl5        lengthening   ENSMUST00000018333.12
     5        Hn1        lengthening   ENSMUST00000021083.6
 
-## Visualization
+### Visualization
 
 To give a overview of APA dynamics, scMAPA can draw heatmap of all gene-cluster-level significant APA events by using clusterAPAheatmap function.
 ```{r}
