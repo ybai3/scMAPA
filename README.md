@@ -41,6 +41,19 @@ The Python code used to split BAM file was kindly shared by Dr. Ming Tang at htt
 
 ### Convert BAM files to Bedgraph format
 
+Then, we use step2.sh to convert all BAM files to bedgraph format. Please load samtools and bedtools before running step2.sh. Step2.sh takes one argument, which indicates the directory to the folder containing the BAM files. Please make sure that the input folder does not contain other BAM files, otherwise all BAM files would be converted to Bedgraph. The bedgraph files will be output to working directory. 
+
+Here is an example to run step2.sh:
+```
+module load gcc/8.2.0
+module load samtools/1.9
+module load bedtools/2.29.0
+chmod +x step2.sh
+./step2.sh /Path/to/folder/containing/bam/files
+```
+We found that the most common publicly available BAM files from cellranger have chromosome names in the following notation: e.g. 1, 22, X, Y. To match the chromosome names in the reference bed file, we wrote command in step2.sh to automatically add "chr" in front of all chromosome names. Please note that if your BAM file's chromosome notation already include prefix 'chr', the command 'awk '{print "chr" $0}' $BEDGRAPH > $NEWBEDGRAPH' in step2.sh should be removed and the whole script should be modified accordingly. To be on safer side, you can check the output bedgraph to see if chromosome names are in right format. 
+
+### Estimate long/short isoforms
 
 ## Part 2 Model fitting, APA detection, and identification of cluster-specific 3'UTR dynamics
 
