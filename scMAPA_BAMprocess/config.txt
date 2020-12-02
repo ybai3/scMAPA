@@ -1,0 +1,23 @@
+#The following file is the result of step 1.
+
+Annotated_3UTR=/ihome/hpark/yub20/NAR_mousebrain/BAMdedup/mm10_m18_refseq_gene_ensembl_extracted_3UTR.sorted.bed
+
+#A comma-separated list of Wiggle files of all samples
+
+Aligned_Wig_files=./Astrocytes_all_chr.bam.trans.bedgraph,./Immune_all_chr.bam.trans.bedgraph,./Neurons_all_chr.bam.trans.bedgraph,./Oligos_all_chr.bam.trans.bedgraph,./Vascular_all_chr.bam.trans.bedgraph
+
+Output_directory=DaPars2
+
+Output_result_file=DaPars2
+
+# Specify the Coverage_threshold
+
+Coverage_threshold=1
+
+# Specify the number of threads used to process the data
+
+Num_Threads = 1
+
+# Provide Sequencing_depth file for normalization
+
+sequencing_depth_file=/ihome/hpark/yub20/NAR_mousebrain/BAMdedup/mapping_bam_location_with_depth.txt

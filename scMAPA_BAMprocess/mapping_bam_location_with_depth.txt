@@ -1,0 +1,5 @@
+./Astrocytes_all_chr.bam.trans.bedgraph	22041288
+./Immune_all_chr.bam.trans.bedgraph	7130682
+./Neurons_all_chr.bam.trans.bedgraph	139751314
+./Oligos_all_chr.bam.trans.bedgraph	30987676
+./Vascular_all_chr.bam.trans.bedgraph	18861167

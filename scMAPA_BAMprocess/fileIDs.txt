@@ -1,0 +1,5 @@
+/ihome/hpark/yub20/NAR_mousebrain/BAMdedup/Astrocytes_all_chr.bam
+/ihome/hpark/yub20/NAR_mousebrain/BAMdedup/Immune_all_chr.bam
+/ihome/hpark/yub20/NAR_mousebrain/BAMdedup/Neurons_all_chr.bam
+/ihome/hpark/yub20/NAR_mousebrain/BAMdedup/Oligos_all_chr.bam
+/ihome/hpark/yub20/NAR_mousebrain/BAMdedup/Vascular_all_chr.bam
