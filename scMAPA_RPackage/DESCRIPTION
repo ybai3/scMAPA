@@ -18,7 +18,9 @@ Imports:
     stringr,
     gplots,
     ggplot2,
-    grDevices
+    grDevices,
+    org.Hs.eg.db,
+    org.Mm.eg.db
 RoxygenNote: 7.1.1
 Suggests: 
     knitr,

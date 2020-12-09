@@ -1,48 +1,90 @@
-#' Read in DaPars outputs and filter out low expressed genes
+#' Generate filtered isofrom-specific count matrix
 #'
-#' \code{readin} returns filtered isoform count matrix for APA identification.
+#' @description Read in the output from DaPars2, select clusters of interests, filter out genes with low quality, and generate a isoform-specific count matrix for APA detection.
 #'
-#' @param path Path to the folder containing (only) outputs from DaPars for all samples.
-#' @param NAcutoff The number of NAs could be tolerated for each gene. \code{readin} will only keep genes with number of NAs <= NAcutoff.
-#' @param CPMcutoff The cutoff for gene-wise sum of CPM. \code{readin} will calculate CPM for each long/short Isoform from each sample separately by CPM=(raw count)*10^6/lib_size. Then, only genes with rowSums(CPM)>CPMcutoff will be kept.
-#' @return The returns will be an isoform specific count matrix based on the DaPars estimation.
+#' @param path Path to the folder containing (only) outputs from DaPars for all clusters.
+#' @param NAcutoff The lower limit for number of clusters in which the expression of a gene is detected (not NA).
+#' @param CPMcutoff_L The gene-wise cutoff for average of CPM values of long isoforms across clusters. Default value is 10.
+#' @param CPMcutoff_S The gene-wise cutoff for average of CPM values of short isoforms across clusters. Default value is 10.
+#' @param clusterOfInterests The clusters should be included in the downstream analysis. It should be "all" to include all clusters or a vector of integers indicating the index of clusters of interest. At least 2 clusters should be provided.
+#' @return The return will be an isoform specific count matrix based on the DaPars2 estimation.
+#'
+#' @details \code{readinPAsites} will read in the output from BAMprocess programs and do selection and filtering based on parameters described above.
+#' @details To filter out genes with low quality, only genes that expressed in number of clusters >= NAcutoff will be kept. \code{readinPAsites} will calculate CPM for long and short Isoforms separately by CPM=(raw count)*10^6/lib_size. Then, only genes with rowMeans(CPM of Long isoform)>CPMcutoff_L & rowMeans(CPM of Short isoform)>CPMcutoff_S will be kept. The flexibility of setting different cutoffs for long and short isoforms allows user to customize the QC by the feature of their samples.
 #'
 #' @examples
-#' ISOMatrix  <- readin(path=getwd(),NAcutoff=3)
-#' ISOMatrix  <- readin(path="Directory/storing/result/tables/from/previous/step",NAcutoff=3,CPMcutoff=10)
+#' ISOMatrix  <- readinPAsites(path=getwd(), NAcutoff=3, CPMcutoff_L = 10, CPMcutoff_S = 10, clusterOfInterests = "all")
+#' ISOMatrix  <- readin(path="Directory/storing/result/tables/from/previous/step")
 #'
 #'
-readin <- function(path, NAcutoff, CPMcutoff=10){
-  ## check input parameters
-  if (!dir.exists(path)) stop(paste('directory',path,'does not exist.'))
-  if (!is.numeric(NAcutoff)) stop("'NAcutoff' is not numeric.")
-  if (!is.numeric(CPMcutoff)) stop("'CPMcutoff' is not numeric.")
-  if (CPMcutoff<=0) stop("'CPMcutoff' should be larger than 0, the default value is 10.")
-  if (NAcutoff<=0) stop("'NAcutoff' should be larger than 0.")
-
-  readin_list <- list.files(path = path)
+readinPAsites <- function(path, NAcutoff = 3, CPMcutoff_L = 10, CPMcutoff_S = 10, clusterOfInterests = "all"){
+  if (!dir.exists(path))
+    stop(paste("directory", path, "does not exist."))
+  if (!is.numeric(NAcutoff))
+    stop("'NAcutoff' is not numeric.")
+  if (!(is.numeric(CPMcutoff_L) & is.numeric(CPMcutoff_S)))
+    stop("'CPMcutoff' is not numeric.")
+  if (CPMcutoff_L <= 0 | CPMcutoff_S <= 0)
+    stop("'CPMcutoff' should be larger than 0, the default value is 10.")
+  readin <- list.files(path = path)
   DaPars_list <- list()
-  length(DaPars_list) <- length(readin_list)
-  for (i in 1:length(readin_list)){
-    DaPars_list[[i]] <- read.delim(readin_list[i], stringsAsFactors=FALSE)
-    DaPars_list[[i]] <- DaPars_list[[i]][,c(1,5,6)]
+  length(DaPars_list) <- length(readin)
+  for (i in 1:length(readin)){
+    DaPars_list[[i]] <- read.delim(readin[i], stringsAsFactors=FALSE)
+    numClusters = (ncol(DaPars_list[[i]])-4)/3
+    DaPars_list[[i]] <- DaPars_list[[i]][,sort(c(1,seq(5,5+(numClusters-1)*3,by=3), seq(6,6+(numClusters-1)*3,by=3)))]
   }
-  names(DaPars_list) <- readin_list
-  PDUI <- suppressWarnings(Reduce(function(x,y) merge(x,y,1,all=T),DaPars_list))
-  PDUI_cpm <- data.frame(C1_exp=rowSums(PDUI[,c(2,3)], na.rm = T))
-  for (i in 2:((ncol(PDUI)-1)/2)){
-    PDUI_cpm <- cbind(PDUI_cpm, rowSums(PDUI[,c((2*i),((2*i)+1))], na.rm = T))
-    colnames(PDUI_cpm)[i] <- paste0("C",i,"_exp")
+  names(DaPars_list) <- readin
+  PDUI <- do.call(rbind,unname(DaPars_list))
+  if (clusterOfInterests[1] != "all"){
+    if (length(clusterOfInterests)<2)
+      stop("At least 2 clusters should be provided.")
+    ## if only two clusters are going to be compared, there should be no NAs in each row.
+    if (length(clusterOfInterests)==2){
+      NAcutoff = 2
+    }
+    if (!(class(clusterOfInterests[1]) %in% c("numeric","integer")))
+      stop("'clusterOfInterests' should be a vector of integers indicating the index of clusters of interest.")
+    select_clus <- integer()
+    for (i in 1:length(clusterOfInterests)){
+      select_clus = c(select_clus,clusterOfInterests[i]*2)
+      select_clus = c(select_clus,clusterOfInterests[i]*2+1)
+    }
+    PDUI <- PDUI[,c(1, select_clus)]
   }
-  lib_size <- colSums(PDUI_cpm)
-  PDUI_cpm <- t((t(PDUI_cpm) * 10^6)/lib_size)
-  PDUI_keep <- rowSums(PDUI_cpm)> CPMcutoff
-  ## CPM cutoff
+  ## filter by rowwise mean of CPM
+  PDUI_cpm_L <- PDUI[,seq(2, ncol(PDUI), by=2)]
+  PDUI_cpm_L[is.na(PDUI_cpm_L)] <- 0
+  PDUI_cpm_S <- PDUI[,seq(3, ncol(PDUI), by=2)]
+  PDUI_cpm_S[is.na(PDUI_cpm_S)] <- 0
+  #PDUI_cpm <- data.frame(C1_exp=rowSums(PDUI[,c(2,3)], na.rm = T))
+  #for (i in 2:((ncol(PDUI)-1)/2)){
+  #  PDUI_cpm <- cbind(PDUI_cpm, rowSums(PDUI[,c((2*i),((2*i)+1))], na.rm = T))
+  #  colnames(PDUI_cpm)[i] <- paste0("C",i,"_exp")
+  #}
+  lib_size_L <- colSums(PDUI_cpm_L)
+  lib_size_S <- colSums(PDUI_cpm_S)
+  #lib_size <- colSums(PDUI_cpm)
+  PDUI_cpm_L <- t((t(PDUI_cpm_L) * 10^6)/lib_size_L)
+  PDUI_cpm_S <- t((t(PDUI_cpm_S) * 10^6)/lib_size_S)
+  #PDUI_cpm <- t((t(PDUI_cpm) * 10^6)/lib_size)
+
+  #sum(rowMeans(PDUI_cpm_L) > 10)
+  #sum(rowMeans(PDUI_cpm_S) > 10)
+  #sum(rowMeans(PDUI_cpm_L) > 10 & rowMeans(PDUI_cpm_S) > 10)
+  #sum(rowMeans(PDUI_cpm) > 10)
+  PDUI_keep <- rowMeans(PDUI_cpm_L) > CPMcutoff_L & rowMeans(PDUI_cpm_S) > CPMcutoff_S
+  #PDUI_keep <- rowMeans(PDUI_cpm)>CPMcutoff
   PDUI <- PDUI[PDUI_keep,]
-  PDUI <- PDUI[rowSums(is.na(PDUI[,-1])) <= NAcutoff,]
-  ## NA cutoff
+  PDUI <- PDUI[rowSums(!(is.na(PDUI[,-1]))) >= (NAcutoff*2),]
   PDUI_rd <- round(PDUI[,-1])
   rownames(PDUI_rd) <- PDUI$Gene
-  colnames(PDUI_rd) <- paste0(rep(do.call(rbind,str_split(readin_list,"_"))[,2],each=2), c("_long_exp","_short_exp"))
+  ##remove genes where only 1 cluster has very large counts so that it passes gene-wise filtering
+  rowsum_PDUIrd <- rep(0, nrow(PDUI_rd))
+  for (i in 1:(ncol(PDUI_rd)/2)){
+    a <- rowSums(PDUI_rd[,c((i*2-1),i*2)],na.rm = T)>0
+    rowsum_PDUIrd <- rowsum_PDUIrd + a
+  }
+  PDUI_rd <- PDUI_rd[!(rowsum_PDUIrd <= 1),]
   return(PDUI_rd)
 }

@@ -7,21 +7,21 @@
 APAdotplot(ECoeffSig_Mat, FDR_P_cutoff = 0.05, CoeffCutoff = log(2), APAgenes)
 }
 \arguments{
-\item{ECoeffSig_Mat}{Matrix containing estimated coefficients, unadjusted P values of Wald tests on coefficients, and SE returned by model mode \code{estimateSig}.}
+\item{ECoeffSig_Mat}{significant APA table returned from \code{APAtest}.}
 
-\item{FDR_P_cutoff}{The cutoff for FDR-controlled P values of Wald tests. Default to 0.05. Only cluster-specific APA events with FDR-controlled P values of Wald test smaller than this number will be considered as 3'UTR lengthening or shortening.}
+\item{FDR_P_cutoff}{The cutoff for FDR-controlled P values of Wald tests. Default to 0.05.}
 
-\item{CoeffCutoff}{The cutoff for estimated coefficients of logistic regression. Only cluster-specific APA events with absoluste value of estimated coeffcients greater than this cutoff will be considered as 3'UTR lengthening or shortening.}
+\item{CoeffCutoff}{The cutoff for estimated coefficients of logistic regression.}
 
-\item{APAgenes}{Character vector, a list of gene symbols/gene IDs user would like to display in the dot plot.}
+\item{APAgenes}{Character vector, a list of gene IDs user would like to display in the dot plot. The format should be consistent with geneID part of rownames in the significant APA table, transcript IDs, chrIDs, and all other parts of APA ID should be removed. For better interpretation, gene IDs will be converted to gene symbols in the plot.}
 }
 \value{
 \code{APAdotplot} returns a dot plot showing the status of 3' UTR legnthening or shortening for user selected genes.
 }
 \description{
-Draw dot plot of genes selected by user. The size of dots shows the deviation of the proportion of long isoforms from grand mean of all transcripts. The color of dots shows the direction of 3' UTR processing (lengthening or shortening).
+Draw dot plot of cluster-specific APA genes selected by user. The size of dots shows the deviation of the proportion of long isoforms from grand mean of all transcripts. The color of dots shows the direction of 3' UTR processing (lengthening or shortening).
 }
 \examples{
-APAdotplot(ECoeffSig_Mat, FDR_P_cutoff=0.05, CoeffCutoff=log(2), APAgenes=c("gene","symbols","gene","IDs"))
+APAdotplot(ECoeffSig_Mat, FDR_P_cutoff=0.05, CoeffCutoff=log(2), APAgenes=str_extract(rownames(ECoeffSig_Mat), "ENSMUSG[:digit:]*"))
 
 }

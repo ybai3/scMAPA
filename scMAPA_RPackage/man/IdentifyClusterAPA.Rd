@@ -4,22 +4,25 @@
 \alias{IdentifyClusterAPA}
 \title{Identify gene-cluster-specific 3'UTR shortening or lengthening}
 \usage{
-IdentifyClusterAPA(ECoeffSig_Mat, FDR_P_cutoff = 0.05, CoeffCutoff = log(2))
+IdentifyClusterAPA(ECoeffSig_Mat, WaldP_cutoff = 0.05, CoeffCutoff = log(2))
 }
 \arguments{
-\item{ECoeffSig_Mat}{Matrix containing estimated coefficients, unadjusted P values of Wald tests on coefficients, and SE returned by model mode \code{estimateSig}.}
+\item{ECoeffSig_Mat}{significant APA table returned from \code{APAtest}.}
 
-\item{FDR_P_cutoff}{The cutoff for FDR-controlled P values of Wald tests. Default to 0.05. Only cluster-specific APA events with FDR-controlled P values of Wald test smaller than this number will be considered as 3'UTR lengthening or shortening.}
+\item{WaldP_cutoff}{The cutoff for P values of Wald tests. Default to 0.05.}
 
-\item{CoeffCutoff}{The cutoff for estimated coefficients of logistic regression. Default to log(2). Only cluster-specific APA events with absoluste value of estimated coeffcients greater than this cutoff will be considered as 3'UTR lengthening or shortening.}
+\item{CoeffCutoff}{The cutoff for estimated coefficients of logistic regression. Default to log(2).}
 }
 \value{
-\code{IdentifyClusterAPA} returns a list consists of a table for each cluster. Tables contain the 3'UTR shortening or lengthening passed filters and their gene IDs, APA event IDs.
+\code{IdentifyClusterAPA} returns a list consists of tables for every cluster. Tables contain the gene IDs, APA event IDs of 3'UTR shortening or lengthening that passed filters.
 }
 \description{
-\code{IdentifyClusterAPA} Identifies gene-cluster-specific 3'UTR shortening or lengthening based on ECoeffSig_Mat output from model mode \code{estimateSig}.
+\code{IdentifyClusterAPA} Identifies gene-cluster-specific 3'UTR shortening or lengthening based on ECoeffSig_Mat output from \code{APAtest}.
+}
+\details{
+After identifying APA genes, scMAPA can identify which cluster contribute to the significant APA dynamic across clusters and estimate what degree, what direction and the significance of the cluster-specific APA event. There are two criteria to be met for a gene to be considered as gene-cluster-specific APA gene. 1) Gene with P values of Wald test on a certain cluster smaller than WaldP_cutoff. 2) Gene with absoluste estimated coeffcient for same cluster greater than CoeffCutoff. Direction will be assigned based on sign of coefficients.
 }
 \examples{
-result_list  <- IdentifyClusterAPA(ECoeffSig_Mat = result_from_estimateSig$ECoeffSig_Mat, FDR_P_cutoff=0.05, CoeffCutoff=log(2))
+result_list  <- IdentifyClusterAPA(ECoeffSig_Mat = sigAPA_table, WaldP_cutoff=0.05, CoeffCutoff=log(2))
 
 }

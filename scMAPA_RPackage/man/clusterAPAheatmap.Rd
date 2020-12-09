@@ -7,11 +7,11 @@
 clusterAPAheatmap(ECoeffSig_Mat, FDR_P_cutoff = 0.05, CoeffCutoff = log(2))
 }
 \arguments{
-\item{ECoeffSig_Mat}{Matrix containing estimated coefficients, unadjusted P values of Wald tests on coefficients, and SE returned by model mode \code{estimateSig}.}
+\item{ECoeffSig_Mat}{significant APA table returned from \code{APAtest}.}
 
-\item{FDR_P_cutoff}{The cutoff for FDR-controlled P values of Wald tests. Default to 0.05. Only cluster-specific APA events with FDR-controlled P values of Wald test smaller than this number will be considered as 3'UTR lengthening or shortening.}
+\item{FDR_P_cutoff}{The cutoff for FDR-controlled P values of Wald tests. Default to 0.05.}
 
-\item{CoeffCutoff}{The cutoff for estimated coefficients of logistic regression. Only cluster-specific APA events with absoluste value of estimated coeffcients greater than this cutoff will be considered as 3'UTR lengthening or shortening.}
+\item{CoeffCutoff}{The cutoff for estimated coefficients of logistic regression.}
 }
 \value{
 \code{clusterAPAheatmap} returns a heatmap of cluster-specific APA genes
