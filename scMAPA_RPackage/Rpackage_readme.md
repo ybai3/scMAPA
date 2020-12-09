@@ -20,6 +20,8 @@ library(nnet)
 library(stringr)
 library(gplots)
 library(ggplot2)
+library("org.Hs.eg.db") 
+library("org.Mm.eg.db") 
 library(scMAPA)
 ```
 
