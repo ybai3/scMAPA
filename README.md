@@ -3,7 +3,7 @@
 
 Alternative polyadenylation (APA) causes shortening or lengthening of the 3ʹ-untranslated region (3ʹ-UTR), widespread in complex tissues. To detect APA and identify cell-type-specific APA in multi-cluster setting, we developed a model-based method, scMAPA. First part of scMAPA is coded as shell scripts, which can 1) divide the aligned read data by the cell cluster[1] and remove PCR duplicates by UMI-tools; 2) Pad the 3'biased reads and convert BAM to Bedgraph file; 3) estimate the abundance of 3ʹ-UTR long and short isoform of genes in each cluster-bulk data using linear regression and quadratic programming implemented in DaPars2. Second part of scMAPA is coded as a R package, which can 4) fit a logistic regression model for each gene and estimate the significance of APA; 5) Identify cluster-specific 3'UTR shortening and lengthening; 6) Do visualization to show the APA dynamics. 
 
-The data used in this example is an intermediate analysis result on a subset of mouse cortex and midbrain dorsal data. The source of the data could be found here: [Zeisel et al. DOI:https://doi.org/10.1016/j.cell.2018.06.021] In this tutorial, we only use three cell clusters: Neurons, Immunes, and Oligos. 
+To show the pipeline of scMAPA, we provide mb_example.bam and mb_cluster.csv as example input, which is a downsized mouse brain single-cell RNA sequencing (scRNA-Seq) data. The source of the data could be found here: [Zeisel et al. DOI:https://doi.org/10.1016/j.cell.2018.06.021] In the example data, we only keep three cell clusters: Neurons, Immune cells, and Oligos. 200 cells are kept for each cluster. 
 
 ## Part 1 BAM file processing and estimation of long/short isoforms
 
@@ -16,7 +16,7 @@ There are 3 shell scripts named step1.sh, step2.sh, step3.sh, corresponding to s
 
 ### Split BAM files
 
-In this step, we use step1.sh to split BAM files by cell cluster information provided by user. To run step1.sh, please first load Python 3.7 with dependent modules. Step1.sh takes two positional arguments. The first argument indicates the directory to the file storing cluster information and the second argument indicates the directory to the BAM file.
+In this step, step1.sh will call split_bam.py to split BAM files by cell cluster information provided by user. To run step1.sh, please first load Python 3.7 with dependent modules, and ensure that split_bam.py is in the same folder. Step1.sh takes two positional arguments. The first argument indicates the directory to the file storing cluster information and the second argument indicates the directory to the BAM file.
 
 Cluster information should be stored in a csv file with two columns. First column contains the cell barcodes that match the barcodes in the BAM file. Second columns contains the cluster ID. For example, the first several lines of a cluster csv file should look like: 
 ```
@@ -33,11 +33,11 @@ Here is an exmaple of running step1.sh:
 module load gcc/8.2.0
 module load python/bioconda-3.7-2019.03
 chmod +x step1.sh
-./step1.sh /Path/to/cluster.csv /Path/to/merged.bam
+./step1.sh mb_cluster.csv mb_example.bam
 ```
 The BAM file for each cluster will be output to the working directory. 
 
-The Python code used to split BAM file was kindly shared by Dr. Ming Tang at http://doi.org/10.5281/zenodo.3946832. It was originally designed for scATAC Seq and we modified it so that it can be used to split RNA Seq BAM files. 
+The Python code used to split BAM file was kindly shared by Dr. Ming Tang at http://doi.org/10.5281/zenodo.3946832. It was originally designed for scATAC Seq and we modified it so that it can be used to split scRNA-Seq BAM files. 
 
 ### Padding BAM, PCR duplicates removal and converting to bedgraph
 
