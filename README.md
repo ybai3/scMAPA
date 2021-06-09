@@ -41,7 +41,16 @@ The Python code used to split BAM file was kindly shared by Dr. Ming Tang at htt
 
 ### Padding BAM, PCR duplicates removal and converting to bedgraph
 
-Then, we use run_scMAPA_step2_dedup.sbatch to remove PCR duplicates for BAM files. Please load samtools and bedtools for this step. Then, please run pad3UTRs.py to correct the bias of 3' tag sequencing by pading reads. In runPad3UTRs.sbatch, we also provide code to convert padded bam to bedgraph format, which will be used for next step. 
+In step2, step2.sh will be used to remove PCR duplications, pads 3'tag reads, and convert BAM to BEDGRAPH format. The input to step2.sh should be the directory to a folder containing the splitted BAM files from step 1. Please load samtools, bedtools, umi-tools, pybedtools for this step. In addition, please make sure following scripts/files are in the same folder of step2.sh: mm10_m18_refseq_gene_ensembl_extracted_3UTR.sorted.bed and GRCm38.p6.genome.chrom.sizes if sequencing samples are mouse; hg38_v27_refseq_gene_extracted_3UTR_sorted.bed and hg38.chrom.sizes if sequencing samples are human; pad3UTRs.py.
+
+Here is an example of running step2.sh:
+```
+module load umi-tools/1.0.0
+module load pybedtools/0.7.10
+
+chmod +x step2.sh
+./step2.sh /path/to/split_bam_files
+```
 
 ### Estimate long/short isoforms
 
