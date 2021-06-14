@@ -41,16 +41,27 @@ The Python code used to split BAM file was kindly shared by Dr. Ming Tang at htt
 
 ### Padding BAM, PCR duplicates removal and converting to bedgraph
 
-In step2, step2.sh will be used to remove PCR duplications, pads 3'tag reads, and convert BAM to BEDGRAPH format. The input to step2.sh should be the directory to a folder containing the splitted BAM files from step 1. Please load samtools, bedtools, umi-tools, pybedtools for this step. In addition, please make sure following scripts/files are in the same folder of step2.sh: mm10_m18_refseq_gene_ensembl_extracted_3UTR.sorted.bed and GRCm38.p6.genome.chrom.sizes if sequencing samples are mouse, hg38_v27_refseq_gene_extracted_3UTR_sorted.bed and hg38.chrom.sizes if sequencing samples are human, and the python script pad3UTRs.py.
+To avoid potential version conflicts between tools called in step2, we split step2 into two bash files. step2_1.sh will be used to remove PCR duplications and step2_2.sh will be used to pad 3'tag reads and convert BAM to BEDGRAPH format. The input to step2_1.sh and step2_2.sh are same, the directory to a folder containing the split BAM files from step 1. Please load samtools, umi-tools for step2_1.sh. Unload all loaded tools and load python 2.7 and pybedtools for step2_2.sh. In addition, please make sure following scripts/files are in the same folder: mm10_m18_refseq_gene_ensembl_extracted_3UTR.sorted.bed and GRCm38.p6.genome.chrom.sizes if sequencing samples are mouse, hg38_v27_refseq_gene_extracted_3UTR_sorted.bed and hg38.chrom.sizes if sequencing samples are human, and the python script pad3UTRs.py.
 
-Here is an example of running step2.sh:
+Here is an example of running step2_1.sh:
 ```
+module load samtools/1.12
 module load umi-tools/1.0.0
+
+chmod +x step2_1.sh
+./step2_1.sh /path/to/split_bam_files
+```
+The output will be deduplicated and sorted BAM files. 
+
+Example of running step2_2.sh:
+```
+module load samtools/1.12
 module load pybedtools/0.7.10
 
-chmod +x step2.sh
-./step2.sh /path/to/split_bam_files
+chmod +x step2_2.sh
+./step2_2.sh /path/to/split_bam_files
 ```
+The output will be padded reads in bedgraph formats. 
 
 ### Estimate long/short isoforms
 
