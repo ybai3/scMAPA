@@ -41,7 +41,7 @@ The Python code used to split BAM file was kindly shared by Dr. Ming Tang at htt
 
 ### Padding BAM, PCR duplicates removal and converting to bedgraph
 
-In step2, step2.sh will be used to remove PCR duplications, pads 3'tag reads, and convert BAM to BEDGRAPH format. The input to step2.sh should be the directory to a folder containing the splitted BAM files from step 1. Please load samtools, bedtools, umi-tools, pybedtools for this step. In addition, please make sure following scripts/files are in the same folder of step2.sh: mm10_m18_refseq_gene_ensembl_extracted_3UTR.sorted.bed and GRCm38.p6.genome.chrom.sizes if sequencing samples are mouse; hg38_v27_refseq_gene_extracted_3UTR_sorted.bed and hg38.chrom.sizes if sequencing samples are human; pad3UTRs.py.
+In step2, step2.sh will be used to remove PCR duplications, pads 3'tag reads, and convert BAM to BEDGRAPH format. The input to step2.sh should be the directory to a folder containing the splitted BAM files from step 1. Please load samtools, bedtools, umi-tools, pybedtools for this step. In addition, please make sure following scripts/files are in the same folder of step2.sh: mm10_m18_refseq_gene_ensembl_extracted_3UTR.sorted.bed and GRCm38.p6.genome.chrom.sizes if sequencing samples are mouse, hg38_v27_refseq_gene_extracted_3UTR_sorted.bed and hg38.chrom.sizes if sequencing samples are human, and the python script pad3UTRs.py.
 
 Here is an example of running step2.sh:
 ```
@@ -54,9 +54,9 @@ chmod +x step2.sh
 
 ### Estimate long/short isoforms
 
-Next we will call DaPars2 developed by Dr. Zheng Xia in the following paper: https://doi.org/10.1038/ncomms6274. We modified the original code so that it will output the estimated counts of long and short isoforms for each cluster. 
+Next we will call DaPars2 developed by Dr. Zheng Xia in the following paper: https://doi.org/10.1038/ncomms6274. We modified the original code so that it will output the estimated counts of long and short isoforms for each cluster. The modified DaPars2 is a python script Dapars2_Multi_Sample_abd.py.
 
-Example codes to run this step is provided in run_DaPars2_array.sbatch, the example of required configuration files are also provided. Please see chrIDs.txt, config.txt, and mapping_bam_location_with_depth.txt. For further detailed information. Please refer to https://hpc.oit.uci.edu/~leil22/DaPars2_Documentation/DaPars2.html
+Step3.sh will call the DaPars2 with following input files: chrIDs.txt, config.txt, and mapping_bam_location_with_depth.txt. chrIDs.txt contains the names of chromosomes that user wants to search for APA event. Please note that the chromosome names should match with names in BAM files. mapping_bam_location_with_depth.txt contains the number of mapping reads for each split bam. This number can be easily calculated by running samtools view -c -F 4 name.bam. config.txt specifies the location of input files. We recommend to set Coverage_threshold to 1 and do filtering in our R package as it gives more flexibility. For further configure options. Please refer to https://hpc.oit.uci.edu/~leil22/DaPars2_Documentation/DaPars2.html
 
 ## Part 2 Model fitting, APA detection, and identification of cluster-specific 3'UTR dynamics
 
