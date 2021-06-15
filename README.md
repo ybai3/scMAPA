@@ -67,7 +67,31 @@ The output will be padded reads in bedgraph formats.
 
 Next we will call DaPars2 developed by Dr. Zheng Xia in the following paper: https://doi.org/10.1038/ncomms6274. We modified the original code so that it will output the estimated counts of long and short isoforms for each cluster. The modified DaPars2 is a python script Dapars2_Multi_Sample_abd.py.
 
-Step3.sh will call the DaPars2 with following input files: chrIDs.txt, config.txt, and mapping_bam_location_with_depth.txt. chrIDs.txt contains the names of chromosomes that user wants to search for APA event. Please note that the chromosome names should match with names in BAM files. mapping_bam_location_with_depth.txt contains the number of mapping reads for each split bam. This number can be easily calculated by running samtools view -c -F 4 name.bam. config.txt specifies the location of input files. We recommend to set Coverage_threshold to 1 and do filtering in our R package as it gives more flexibility. For further configure options. Please refer to https://hpc.oit.uci.edu/~leil22/DaPars2_Documentation/DaPars2.html
+Step3.sh will call the DaPars2 with following input files: chrIDs.txt, config.txt, and mapping_bam_location_with_depth.txt. chrIDs.txt contains the names of chromosomes that user wants to search for APA event. Please note that the chromosome names should match with names in BAM files. config.txt specifies the location of input files. We recommend to set Coverage_threshold to 1 and do filtering in our R package as it gives more flexibility. For further configure options. Please refer to https://hpc.oit.uci.edu/~leil22/DaPars2_Documentation/DaPars2.html. mapping_bam_location_with_depth.txt contains the number of mapping reads for each split bam. This number can be easily calculated by running samtools view -c -F 4 name.bam. For the example data,
+```
+echo clusterImmune.dedup.chr.bam
+samtools view -c -F 4 clusterImmune.dedup.chr.bam
+echo clusterNeurons.dedup.chr.bam
+samtools view -c -F 4 clusterNeurons.dedup.chr.bam
+echo clusterOligos.dedup.chr.bam
+samtools view -c -F 4 clusterOligos.dedup.chr.bam
+```
+The output would be 
+```
+clusterImmune.dedup.chr.bam
+3122448
+clusterNeurons.dedup.chr.bam
+9095480
+clusterOligos.dedup.chr.bam
+7962101
+```
+User can easily convert the output to mapping_bam_location_with_depth.txt
+```
+./clusterImmune.dedup.chr.bam.trans.bedgraph    3122448
+./clusterNeurons.dedup.chr.bam.trans.bedgraph   7130682
+./clusterOligos.dedup.chr.bam.trans.bedgraph    139751314
+```
+The order of bedgraph in mapping_bam_location_with_depth.txt should be same with the order of bedgraph files in config.txt
 
 ## Part 2 Model fitting, APA detection, and identification of cluster-specific 3'UTR dynamics
 
