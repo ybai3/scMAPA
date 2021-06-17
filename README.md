@@ -101,7 +101,7 @@ Please install the following R packages before using scMAPA: multcomp, lmtest, w
 ```{r, echo=TRUE, message=FALSE}
 if(!require(devtools)) install.packages("devtools")
 require(devtools)
-if(!require(scMAPA)) devtools::install_github("ybai3/scMAPA") 
+if(!require(scMAPA)) devtools::install_github("ybai3/scMAPA/scMAPA_RPackage") 
 require(scMAPA)
 library(multcomp)
 library(lmtest)
