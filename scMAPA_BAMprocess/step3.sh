@@ -1,16 +1,17 @@
 #!/bin/bash
 
-module load gcc/8.2.0
-module load python/anaconda3.7-5.3.1_genomics
-module load bedtools/2.27.1
-module load r/3.5.1
+#step3.sh will call modified DaPars2 to estimate the proximal PA site and the abundance of long/short isoforms for each cluster.
+#The location of input files should be specified in the configuration.txt. The desired chromosome ID should be indicated in chrID.txt.
+#Please load the following modules before running step3.sh
+#python 3.7x
+#./step3.sh configuration.txt chrID.txt
 
-#./step3.sh path_to_configuration_file_directory
-
-cfg_files=$1/*.txt
-for configure in $cfg_files; do 
-    echo "Starting processing configuration file $configure"
-	echo $configure
-    python DaPars_main_3-5-19.py $configure
+cfg_files=$1
+chrID=$2
+cat $chrID | while read chr; do
+    echo "Starting processing chromosome $chr"
+    echo $chr
+    echo $cfg_files
+    python Dapars2_Multi_Sample_abd.py $cfg_files $chr
 
 done

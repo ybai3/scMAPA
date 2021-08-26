@@ -6,9 +6,9 @@ Annotated_3UTR=./mm10_m18_refseq_gene_ensembl_extracted_3UTR.sorted.bed
 
 Aligned_Wig_files=./clusterImmune.dedup.chr.bam.trans.bedgraph,./clusterNeurons.dedup.chr.bam.trans.bedgraph,./clusterOligos.dedup.chr.bam.trans.bedgraph
 
-Output_directory=DaPars2
+Output_directory=ParaVer
 
-Output_result_file=DaPars2
+Output_result_file=ParaVer
 
 # Specify the Coverage_threshold
 
