@@ -144,11 +144,14 @@ As shown above, readinPAsites() returns filtered isoform specific count matrix. 
 
 Next, we use APAtest() function to estimate gene-level significance of APA. This function estimates significance of APA event at gene level. It will fit a logistic regression model for each gene and estimate significance using Likelihood ratio test. 
 ```{r}
-b <- estimateSig(ISOMatrix = a, mode = "model", FDR_P_cutoff = 0.05)
-names(b)
+APAgene <- APAtest(countMatrix = ISO_mat, coverageCutoff = 20, ORcutoff = 0.25, adPval = 0.05)
+APAgene[1:3,1:5]
 ```
 
-    [1] "siglist_FDRp"  "ECoeff_Mat"    "ECoeffSig_Mat"
+                                                                                               pvalue_LRT pval_LRT.adjusted Genes Immune.coef   Neuron.coef Oligos.coef
+ENSMUST00000192001.5|ENSMUST00000048309.11|ENSMUST00000192314.1|ENSMUSG00000041570.14|chr1|- 2.488587e-04      3.521953e-04 ENSMUST00000192001.5|ENSMUST00000048309.11|ENSMUST00000192314.1|ENSMUSG00000041570.14|chr1|-  -0.4709917    0.02354423   1.4638685
+ENSMUST00000192904.1|ENSMUSG00000104524.1|chr1|-                                             7.890328e-33      3.516658e-32 ENSMUST00000192904.1|ENSMUSG00000104524.1|chr1|-  -2.1968858    1.29201697   2.4544736
+ENSMUST00000043951.9|ENSMUSG00000037351.9|chr1|-                                             4.230664e-23      1.407145e-22 ENSMUST00000043951.9|ENSMUSG00000037351.9|chr1|-  -0.5431560    0.09694786  -0.4625276
 
 Model-based mode will return a list object containing three elements: 
 1. siglist_FDRp contains significant APA event IDs and their gene-level FDR controlled P values.
