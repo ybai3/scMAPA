@@ -155,35 +155,14 @@ ENSMUST00000192001.5|ENSMUST00000048309.11|ENSMUST00000192314.1|ENSMUSG000000415
 ENSMUST00000192904.1|ENSMUSG00000104524.1|chr1|-                                             7.890328e-33      3.516658e-32 ENSMUST00000192904.1|ENSMUSG00000104524.1|chr1|-  -2.1968858    1.29201697   2.4544736
 ENSMUST00000043951.9|ENSMUSG00000037351.9|chr1|-                                             4.230664e-23      1.407145e-22 ENSMUST00000043951.9|ENSMUSG00000037351.9|chr1|-  -0.5431560    0.09694786  -0.4625276
 ```
-
-Model-based mode will return a list object containing three elements: 
-1. siglist_FDRp contains significant APA event IDs and their gene-level FDR controlled P values.
-```{r}
-b$siglist_FDRp[1:5]
-```
-
-    ENSMUST00000000619.7|Clcn4|chr7|- ENSMUST00000000769.13|Serpinf1|chr11|-   ENSMUST00000000925.9|Smarcb1|chr10|-     ENSMUST00000000985.6|Oxa1l|chr14|+ 
-                          4.017108e-02                           8.424570e-51                           3.912039e-31                           6.661349e-03 
-       ENSMUST00000001156.7|Cfp|chrX|- 
-                          8.211515e-04 
-    
-2. ECoeff_Mat contains estimated coefficients, P values, and SE from logsitic regression model for all genes. and 3. ECoeffSig_Mat, same matrix but only contains significant APA events. This will be used for identification of cluster-specific APA and visualization. 
-```{r}
-b$ECoeffSig_Mat[1:3,]
-```
-```
-                                                                        Genes      Immune.coef   Neurons.coef Oligos.coef   Immune.pval   Neurons.pval  Oligos.pval Immune.se  Neurons.se   Oligos.se
-    ENSMUST00000000619.7|Clcn4|chr7|-           ENSMUST00000000619.7|Clcn4|chr7|-   -1.136818     0.176077    -0.556795     2.443141e-01  1.664931e-02  0.05779045   0.9764202  0.07353817   0.2934695
-    ENSMUST00000000769.13|Serpinf1|chr11|- ENSMUST00000000769.13|Serpinf1|chr11|-   -3.091410     2.155614     0.650714     4.905856e-26  4.394695e-18  0.23257649   0.2929338  0.24868416   0.5451016
-    ENSMUST00000000925.9|Smarcb1|chr10|-     ENSMUST00000000925.9|Smarcb1|chr10|-  -12.564490     5.622854    -14.585091    9.866261e-01  9.851048e-01  0.98447556 749.5591201  301.17936633 749.5589398
-```
+pval_LRT.adjusted can be used to identify significant APA genes.
 
 ### Identify cluster-specific 3' UTR shortening and lengthening
 
 After identifying genes with significant APA dynamics among all clusters, we would like to go one step further to identify the clusters with significantly more or less long isoforms than the across-cluster average for the gene. We call this step as gene-cluster-level identification, it identifies clusters whose estimated regression model coefficient is significantly (FDR < 0.05 using Wald test) and strongly (absolute value of coefficient > log(2), corresponds to 2 fold change in odds ratio) deviated from 0. Both these two parameters could be changed by users.
 ```{r}
-c <- IdentifyClusterAPA(ECoeffSig_Mat = b$ECoeffSig_Mat, FDR_P_cutoff = 0.05, CoeffCutoff = log(2))
-names(c)
+cellTypeSpecificAPA <- IdentifyClusterAPA(ECoeffSig_Mat = APAgene, WaldP_cutoff = 0.05, CoeffCutoff = log(2))
+names(cellTypeSpecificAPA)
 ```
 
     [1] "Immune"  "Neurons" "Oligos"
@@ -205,7 +184,7 @@ c$Immune[1:5,]
 
 To give a overview of APA dynamics, scMAPA can draw heatmap of all gene-cluster-level significant APA events by using clusterAPAheatmap function.
 ```{r}
-clusterAPAheatmap(ECoeffSig_Mat = b$ECoeffSig_Mat, FDR_P_cutoff = 0.05, CoeffCutoff = log(2))
+clusterAPAheatmap(ECoeffSig_Mat = APAgene)
 ```
 ![](scMAPA_RPackage/vignettes/image/heatmap.png)
 
@@ -213,9 +192,6 @@ The color indicates the degree and direction of 3' UTR processing. In this examp
 
 Usually, there is a certain set of genes that may play an important role or act as marker for specific cluster. scMAPA could visualize the 3' UTR dynamic of user-defined significant APA. APAgenes parameter in APAdotplot function is not case sensitive. The input to APAgenes parameter should be a character vector consistent with second component of APA event ID (Genes column of ECoeffSig_Mat or siglist_FDRp).
 ```{r}
-APAdotplot(ECoeffSig_Mat = b$ECoeffSig_Mat, FDR_P_cutoff = 0.05, CoeffCutoff = log(2), APAgenes = c("Rab6b","Ensa","Btf3","Hbegf","Yif1a","Fuca1","Man2b1","Paip2",
-                                                                                                    "Alg5","Ehbp1l1","Tcf25","Atat1","Nfkb2","Nmral1","Mthfs","Lgals1",
-                                                                                                    "Dynlt1c","Uap1l1","Snrpb","Eed","Cwc25","Pigp","St3gal6",
-                                                                                                    "Gtf2a2","Eloc","Spcs2"))
+APAdotplot(ECoeffSig_Mat = APAgene, FDR_P_cutoff = 0.05, CoeffCutoff = log(2), APAgenes = c("Atat1","Myo1d","Cul3","Hdlbp"))
 ```
 ![](scMAPA_RPackage/vignettes/image/dotplot.png)
