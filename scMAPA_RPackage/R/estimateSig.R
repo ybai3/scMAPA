@@ -49,7 +49,8 @@ APAtest <- function(countMatrix, coverageCutoff = 20, ORcutoff = 0.25, adPval = 
       pvalue_LRT <- c(pvalue_LRT, lrtest(greg, greg_null)$`Pr(>Chisq)`[2])
       names(pvalue_LRT)[length(pvalue_LRT)] <- rownames(PDUI_rd)[i]
       estimate_p <- numeric(length = ncol(PDUI_rd) * 4/2)
-      names(estimate_p) <- c(paste0(unique(do.call(rbind, str_split(colnames(PDUI_rd), "_"))[, 2]), ".coef"), paste0(unique(do.call(rbind, str_split(colnames(PDUI_rd), "_"))[, 2]), ".pval"), paste0(unique(do.call(rbind, str_split(colnames(PDUI_rd), "_"))[, 2]), ".se"),paste0(unique(do.call(rbind, str_split(colnames(PDUI_rd), "_"))[, 2]), ".OR"))
+      cluster_name <- unique(str_remove(colnames(PDUI_rd), "_long_exp|_short_exp"))
+      names(estimate_p) <- c(paste0(cluster_name, ".coef"), paste0(cluster_name, ".pval"), paste0(cluster_name, ".se"),paste0(cluster_name, ".OR"))
       for (j in 1:(ncol(PDUI_rd)/2)) {
         c <- greg_sum[which(rownames(greg_sum) == paste0("clusterC", j)), 1]
         estimate_p[j] <- ifelse(length(c) == 0, NA,c)
