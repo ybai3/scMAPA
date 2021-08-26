@@ -12,7 +12,7 @@ To show the pipeline of scMAPA, we provide mb_example.bam and mb_cluster.csv as 
 
     git clone https://github.com/ybai3/scMAPA.git
    
-There are 3 shell scripts named step1.sh, step2.sh, step3.sh, corresponding to step 1), 2), and 3), respectively.
+There are 3 shell scripts named step1.sh, step2_1.sh and step2_2.sh, step3.sh, corresponding to step 1), 2), and 3), respectively.
 
 ### Split BAM files
 
