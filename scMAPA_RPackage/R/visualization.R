@@ -26,7 +26,8 @@ clusterAPAheatmap <- function(ECoeffSig_Mat, FDR_P_cutoff=0.05, CoeffCutoff=log(
   EP.sig.clus <- ECoeffSig_Mat[keep.EP,]
   y <- as.matrix(EP.sig.clus[,str_detect(colnames(ECoeffSig_Mat), ".coef")])
   y[is.na(y)] <- 0
-  colnames(y) <- unique(do.call(rbind, str_split(colnames(ECoeffSig_Mat), "\\."))[,1])[-1]
+  colnames(y) <- unique(do.call(rbind, str_split(colnames(ECoeffSig_Mat),
+                                                 "\\."))[, 1])[-c(1,2,3)]
   colfunc <- colorRampPalette(c("blue", "white", "red"))
   heatmap.2(y, col=colfunc(15),
             dendrogram="both", srtCol=45,
@@ -73,7 +74,7 @@ APAdotplot <- function(ECoeffSig_Mat, FDR_P_cutoff=0.05, CoeffCutoff=log(2), APA
   }else{
     stop("The input gene ID is not ENSEMBL human or mouse.")
   }
-  EP.clus.dotplot <- EP.clus.dotplot[tolower(EP.clus.dotplot$Genes) %in% tolower(APAgenes),]
+
   if (str_detect(EP.clus.dotplot$Genes[1],"ENSMUSG")){
     EP.clus.dotplot$GeneSymbol <- mapIds(org.Mm.eg.db, keys = str_extract(EP.clus.dotplot$Genes, "ENSMUSG[:digit:]*"), keytype = "ENSEMBL", column="SYMBOL")
   } else if (str_detect(EP.clus.dotplot$Genes[1],"ENSG")){
@@ -81,6 +82,7 @@ APAdotplot <- function(ECoeffSig_Mat, FDR_P_cutoff=0.05, CoeffCutoff=log(2), APA
   } else {
     stop("The species of gene ID is not ENSEMBL human or mouse.")
   }
+  EP.clus.dotplot <- EP.clus.dotplot[tolower(EP.clus.dotplot$GeneSymbol) %in% tolower(APAgenes),]
   ggplot(EP.clus.dotplot,aes(x=GeneSymbol, y=cluster, size=abs_Coef, color=isoform))+
     geom_point()+theme_classic()+theme(axis.text.x = element_text(angle = 45,hjust = 1))
 }
