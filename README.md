@@ -131,11 +131,12 @@ colnames(ISO_mat) <- str_replace(colnames(ISO_mat), "Sample_3", "Oligos")
 ISO_mat[1:3,1:4]
 ```
 
+```
                                                                                              Immune_long_exp Immune_short_exp Neuron_long_exp Neuron_short_exp
 ENSMUST00000027634.12|ENSMUST00000151708.2|ENSMUST00000112648.7|ENSMUSG00000026385.16|chr1|-            1075             2036             376              669
 ENSMUST00000192001.5|ENSMUST00000048309.11|ENSMUST00000192314.1|ENSMUSG00000041570.14|chr1|-             208               64            2121              398
 ENSMUST00000192904.1|ENSMUSG00000104524.1|chr1|-                                                           4              256             131              256
-
+```
 
 As shown above, readinPAsites() returns filtered isoform specific count matrix. Each cluster has two columns, corresponding to long/short isoforms. All further statistical analysis would be conducted on this matrix. 
 
