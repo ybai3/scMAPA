@@ -55,6 +55,7 @@ The output will be deduplicated and sorted BAM files.
 
 Example of running step2_2.sh:
 ```
+module load python/anaconda2.7-5.2.0
 module load samtools/1.12
 module load pybedtools/0.7.10
 
@@ -93,7 +94,13 @@ User can easily convert the output to mapping_bam_location_with_depth.txt
 ```
 The order of bedgraph in mapping_bam_location_with_depth.txt should be same with the order of bedgraph files in config.txt
 
-To accelerate running speed, user can choose to parallel run all chromosomes instead of using provided step3.sh. The example of parellel run is provided in scMAPA_BAMprocess/run_Dapars2_array.sbatch. 
+Example of running step3.sh:
+```
+chmod +x step3.sh
+./step3.sh configuration.txt chrID.txt
+```
+
+To accelerate running speed, we suggest user to run all chromosomes in parallel if APA profiling of whole transcriptome is of interest. The example of parellel run is provided in scMAPA_BAMprocess/run_Dapars2_array.sbatch.
 
 ## Part 2 Model fitting, APA detection, and identification of cluster-specific 3'UTR dynamics
 
