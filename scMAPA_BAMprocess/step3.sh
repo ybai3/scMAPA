@@ -3,7 +3,6 @@
 #step3.sh will call modified DaPars2 to estimate the proximal PA site and the abundance of long/short isoforms for each cluster.
 #The location of input files should be specified in the configuration.txt. The desired chromosome ID should be indicated in chrID.txt.
 #Please load the following modules before running step3.sh
-#python 3.7x
 #./step3.sh configuration.txt chrID.txt
 
 cfg_files=$1
