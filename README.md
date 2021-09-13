@@ -68,7 +68,7 @@ The output will be padded reads in bedgraph formats.
 
 Next we will call DaPars2 developed by Dr. Zheng Xia in the following paper: https://doi.org/10.1038/ncomms6274. We modified the original code so that it will output the estimated counts of long and short isoforms for each cluster. The modified DaPars2 is a python script Dapars2_Multi_Sample_abd.py. Please note that DaPars2 was originally written in Python/2.7. So, please make sure the python loaded for step3.sh is python/2.7.
 
-Step3.sh will call the DaPars2 with following input files: chrIDs.txt, config.txt, and mapping_bam_location_with_depth.txt. chrIDs.txt contains the names of chromosomes that user wants to search for APA event. Please note that the chromosome names should match with names in BAM files. config.txt specifies the location of input files. We recommend to set Coverage_threshold to 1 and do filtering in our R package as it gives more flexibility. For further configure options of DaPars2. Please refer to https://hpc.oit.uci.edu/~leil22/DaPars2_Documentation/DaPars2.html. mapping_bam_location_with_depth.txt contains the number of mapping reads for each split bam. This number can be easily calculated by running samtools view -c -F 4 name.bam. For the example data,
+Step3.sh will call the DaPars2 with following input files: chrIDs.txt, config.txt, and mapping_bam_location_with_depth.txt. chrIDs.txt contains the names of chromosomes that user wants to search for APA event. Please note that the chromosome names should match with names in BAM files. config.txt specifies the location of other input files. Below is the config.txt for example data. In the configuration file, we recommend to set Coverage_threshold to 1 and do filtering in our R package as it gives more flexibility. mapping_bam_location_with_depth.txt contains the number of mapping reads for each split bam. This number can be easily calculated by running samtools view -c -F 4 name.bam. For the example data,
 ```
 echo clusterImmune.dedup.chr.bam
 samtools view -c -F 4 clusterImmune.dedup.chr.bam
@@ -86,18 +86,20 @@ clusterNeurons.dedup.chr.bam
 clusterOligos.dedup.chr.bam
 7962101
 ```
-User can easily convert the output to mapping_bam_location_with_depth.txt
+User can easily generate mapping_bam_location_with_depth.txt based on output from samtools shown above. 
+For example data, mapping_bam_location_with_depth.txt should be:
 ```
 ./clusterImmune.dedup.chr.bam.trans.bedgraph    3122448
 ./clusterNeurons.dedup.chr.bam.trans.bedgraph   7130682
 ./clusterOligos.dedup.chr.bam.trans.bedgraph    139751314
 ```
-The order of bedgraph in mapping_bam_location_with_depth.txt should be same with the order of bedgraph files in config.txt
+The order of bedgraph files in mapping_bam_location_with_depth.txt should be consistent with the bedgraph files specified in Aligned_Wig_files of config.txt
+For further configuration options of DaPars2. Please refer to https://hpc.oit.uci.edu/~leil22/DaPars2_Documentation/DaPars2.html. 
 
 Example of running step3.sh:
 ```
 chmod +x step3.sh
-./step3.sh configuration.txt chrID.txt
+./step3.sh config.txt chrID.txt
 ```
 
 To accelerate running speed, we suggest user to run all chromosomes in parallel if APA profiling of whole transcriptome is of interest. The example of parellel run is provided in scMAPA_BAMprocess/run_Dapars2_array.sbatch.
