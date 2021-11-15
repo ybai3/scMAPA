@@ -68,7 +68,35 @@ The output will be padded reads in bedgraph formats.
 
 Next we will call DaPars2 developed by Dr. Zheng Xia in the following paper: https://doi.org/10.1038/ncomms6274. We modified the original code so that it will output the estimated counts of long and short isoforms for each cluster. The modified DaPars2 is a python script Dapars2_Multi_Sample_abd.py. Please note that DaPars2 was originally written in Python/2.7. So, please make sure the python loaded for step3.sh is python/2.7.
 
-Step3.sh will call the DaPars2 with following input files: chrIDs.txt, config.txt, and mapping_bam_location_with_depth.txt. chrIDs.txt contains the names of chromosomes that user wants to search for APA event. Please note that the chromosome names should match with names in BAM files. config.txt specifies the location of other input files. Below is the config.txt for example data. In the configuration file, we recommend to set Coverage_threshold to 1 and do filtering in our R package as it gives more flexibility. mapping_bam_location_with_depth.txt contains the number of mapping reads for each split bam. This number can be easily calculated by running samtools view -c -F 4 name.bam. For the example data,
+Step3.sh will call the DaPars2 with following input files: chrIDs.txt, config.txt, and mapping_bam_location_with_depth.txt. chrIDs.txt contains the names of chromosomes that user wants to search for APA event. Please note that the chromosome names should match with names in BAM files. config.txt specifies the location of other input files. Below is the config.txt for example data. 
+
+```
+#The following bed files are provided for human and mouse samples in scMAPA_BAMprocess folder as hg38_v27_refseq_gene_extracted_3UTR_sorted.bed and mm10_m18_refseq_gene_ensembl_extracted_3UTR.sorted.bed. 
+
+Annotated_3UTR=./mm10_m18_refseq_gene_ensembl_extracted_3UTR.sorted.bed
+
+#A comma-separated list of Wiggle files of all samples
+
+Aligned_Wig_files=./clusterImmune.dedup.chr.bam.trans.bedgraph,./clusterNeurons.dedup.chr.bam.trans.bedgraph,./clusterOligos.dedup.chr.bam.trans.bedgraph
+
+Output_directory=DaPars2
+
+Output_result_file=DaPars2
+
+# Specify the Coverage_threshold
+
+Coverage_threshold=1
+
+# Specify the number of threads used to process the data
+
+Num_Threads = 1
+
+# Provide Sequencing_depth file for normalization
+
+sequencing_depth_file=./mapping_bam_location_with_depth.txt
+```
+
+In the configuration file, we recommend to set Coverage_threshold to 1 and do filtering in our R package as it gives more flexibility. mapping_bam_location_with_depth.txt contains the number of mapping reads for each split bam. This number can be easily calculated by running samtools view -c -F 4 name.bam. For the example data,
 ```
 echo clusterImmune.dedup.chr.bam
 samtools view -c -F 4 clusterImmune.dedup.chr.bam
